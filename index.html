@@ -1,4 +1,4 @@
-´<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -97,18 +97,6 @@
   <div style="text-align: center;">
     <img src="Limcahands_Icon.png" height="64px" width="64px" >
   </div>
-  <div class="manual">
-    <h3>Manual de uso</h3>
-    <p>Este simulador te permite visualizar y comparar de forma sencilla el crecimiento de una inversión o el comportamiento de un crédito a lo largo del tiempo.</p>
-    <ul>
-      <li><strong>Tipo de simulación:</strong> Elige si deseas simular una <em>inversión</em> o un <em>crédito</em>.</li>
-      <li><strong>Monto:</strong> Especifica la cantidad de dinero inicial para invertir o solicitar como crédito.</li>
-      <li><strong>Tasa de interés:</strong> Indica la tasa anual aplicable.</li>
-      <li><strong>Plazo:</strong> Número de años de la simulación.</li>
-      <li><strong>IVA:</strong> Si estás simulando un crédito, puedes elegir si los intereses generan IVA (16%).</li>
-      <li>Haz clic en <strong>Simular</strong> para ver el resultado en la gráfica.</li>
-    </ul>
-  </div>
 
   <div class="container">
     <div class="form-section">
@@ -147,25 +135,28 @@
     function simular() {
       const tipo = document.getElementById('tipo').value;
       const monto = parseFloat(document.getElementById('monto').value);
-      const tasa = parseFloat(document.getElementById('tasa').value) / 100;
-      const plazo = parseInt(document.getElementById('plazo').value);
+      const tasaAnual = parseFloat(document.getElementById('tasa').value) / 100;
+      const plazoAnios = parseInt(document.getElementById('plazo').value);
       const aplicarIVA = document.getElementById('iva').value === 'si';
+
+      const tasaMensual = tasaAnual / 12;
+      const plazoMeses = plazoAnios * 12;
 
       let labels = [];
       let datos = [];
 
-      for (let i = 1; i <= plazo; i++) {
-        labels.push('Año ' + i);
+      for (let mes = 1; mes <= plazoMeses; mes++) {
+        labels.push('Mes ' + mes);
 
         if (tipo === 'inversion') {
-          let valor = monto * Math.pow(1 + tasa, i);
+          let valor = monto * Math.pow(1 + tasaMensual, mes);
           datos.push(valor.toFixed(2));
         } else {
-          let interesAnual = monto * tasa;
-          let iva = aplicarIVA ? interesAnual * 0.16 : 0;
-          let amortizacion = monto / plazo;
-          let totalAnual = interesAnual + iva + amortizacion;
-          datos.push(totalAnual.toFixed(2));
+          let interesMensual = monto * tasaMensual;
+          let iva = aplicarIVA ? interesMensual * 0.16 : 0;
+          let amortizacion = monto / plazoMeses;
+          let totalMensual = interesMensual + iva + amortizacion;
+          datos.push(totalMensual.toFixed(2));
         }
       }
 
@@ -174,7 +165,7 @@
         data: {
           labels: labels,
           datasets: [{
-            label: tipo === 'inversion' ? 'Valor acumulado de inversión' : 'Pago anual del crédito',
+            label: tipo === 'inversion' ? 'Valor acumulado de inversión' : 'Pago mensual del crédito',
             data: datos,
             borderColor: tipo === 'inversion' ? '#007f5f' : '#d00000',
             backgroundColor: tipo === 'inversion' ? '#caffbf' : '#ffadad',
